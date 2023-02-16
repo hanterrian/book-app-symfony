@@ -1,0 +1,67 @@
+version: '3.1'
+services:
+  webserver:
+    container_name: 'bsa-web'
+    build:
+      context: .docker/nginx
+      dockerfile: Dockerfile
+    working_dir: /application
+    volumes:
+      - .:/application
+      - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./.docker/nginx/sites/:/etc/nginx/sites-available
+      - ./.docker/nginx/conf.d/:/etc/nginx/conf.d
+      - ./var/docker-log:/var/log
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    container_name: 'bsa-php'
+    build:
+      context: .docker/php-fpm
+      dockerfile: Dockerfile
+    working_dir: /application
+    volumes:
+      - .:/application
+      - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini
+    depends_on:
+      - postgres
+      - memcached
+      - mailhog
+      - redis
+
+  postgres:
+    container_name: 'bsa-postgres'
+    image: 'postgres:15-alpine'
+    working_dir: /application
+    volumes:
+      - .:/application
+      - db-data:/var/lib/postgresql/data:rw
+    environment:
+      - POSTGRES_USER=bsa-root
+      - POSTGRES_PASSWORD=bsa-root-pass
+      - POSTGRES_DB=bsa
+      - PGDATA=/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  memcached:
+    container_name: 'bsa-memcached'
+    image: 'memcached:alpine'
+
+  mailhog:
+    container_name: 'bsa-mailhog'
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+  redis:
+    container_name: 'bsa-redis'
+    image: 'redis:alpine'
+
+volumes:
+  db-data:
