@@ -2,6 +2,11 @@ FROM php:8.2-fpm
 
 WORKDIR "/application"
 
+ARG NODE_VERSION=18
+ENV TZ=Europe/Kiev
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Get frequently used tools
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -21,7 +26,14 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     wget \
+    supervisor \
+    python2 \
+    gosu \
     zsh
+
+RUN curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
+        && apt-get install -y nodejs \
+        && npm install -g npm
 
 RUN docker-php-ext-configure zip
 
@@ -60,4 +72,4 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord"]

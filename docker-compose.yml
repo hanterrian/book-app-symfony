@@ -27,6 +27,8 @@ services:
     volumes:
       - .:/application
       - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini
+      - ./.docker/php-fpm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./var/docker-log:/var/log
     depends_on:
       - postgres
       - memcached
