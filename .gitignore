@@ -1,3 +1,5 @@
+/.idea
+.vscode
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -17,4 +19,4 @@
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
 /phpunit.xml
-###< symfony/phpunit-bridge ###
+###< symfony/phpun
