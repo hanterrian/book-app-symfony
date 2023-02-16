@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpng-dev \
     libpq-dev \
+    libxml2-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libonig-dev \
@@ -30,7 +31,9 @@ RUN docker-php-ext-install \
         pcntl \
         intl \
         zip \
-        opcache
+        opcache \
+        xml \
+        dom
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pgsql pdo_pgsql
