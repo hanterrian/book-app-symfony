@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+export APP_SERVICE=${APP_SERVICE:-"php-fpm"}
+
+# Define Docker Compose command prefix...
+docker compose &>/dev/null
+if [ $? == 0 ]; then
+  DOCKER_COMPOSE=(docker compose)
+else
+  DOCKER_COMPOSE=(docker-compose)
+fi
+
+ARGS=()
+
+# Proxy PHP commands to the "php" binary on the application container...
+if [ "$1" == "php" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" "php" "$@")
+
+# Proxy vendor binary commands on the application container...
+elif [ "$1" == "bin" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" ./vendor/bin/"$@")
+
+# Proxy Composer commands to the "composer" binary on the application container...
+elif [ "$1" == "composer" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" "composer" "$@")
+
+elif [ "$1" == "bin/console" ] || [ "$1" == "art" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" php bin/console "$@")
+
+# Proxy NPM commands to the "npm" binary on the application container...
+elif [ "$1" == "npm" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" npm "$@")
+
+# Initiate a Bash shell within the application container...
+elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
+  shift 1
+
+  ARGS+=(exec -u 1000)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" bash "$@")
+
+# Initiate a root user Bash shell within the application container...
+elif [ "$1" == "root-shell" ] || [ "$1" == "root-bash" ]; then
+  shift 1
+
+  ARGS+=(exec)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" bash "$@")
+
+# Pass unknown commands to the "docker-compose" binary...
+else
+  ARGS+=("$@")
+fi
+
+# Run Docker Compose with the defined arguments...
+"${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
