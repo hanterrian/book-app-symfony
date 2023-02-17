@@ -36,7 +36,7 @@ elif [ "$1" == "composer" ]; then
   [ ! -t 0 ] && ARGS+=(-T)
   ARGS+=("$APP_SERVICE" "composer" "$@")
 
-elif [ "$1" == "bin/console" ] || [ "$1" == "art" ]; then
+elif [ "$1" == "bin/console" ] || [ "$1" == "console" ]; then
   shift 1
 
   ARGS+=(exec -u 1000)
