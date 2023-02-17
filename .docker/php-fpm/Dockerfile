@@ -70,6 +70,13 @@ RUN chown -R www-data:www-data /application
 # Copy and run composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+
+COPY start-container /usr/local/bin/start-container
+
+RUN chmod +x /usr/local/bin/start-container
+
 EXPOSE 9000
 
-CMD ["/usr/bin/supervisord"]
+ENTRYPOINT ["start-container"]
+
+#CMD ["/usr/bin/supervisord"]
