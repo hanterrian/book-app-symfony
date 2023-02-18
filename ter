@@ -67,6 +67,13 @@ elif [ "$1" == "root-shell" ] || [ "$1" == "root-bash" ]; then
   [ ! -t 0 ] && ARGS+=(-T)
   ARGS+=("$APP_SERVICE" bash "$@")
 
+elif [ "$1" == "csfix" ]; then
+  shift 1
+
+  ARGS+=(exec)
+  [ ! -t 0 ] && ARGS+=(-T)
+  ARGS+=("$APP_SERVICE" composer csfix)
+
 # Pass unknown commands to the "docker-compose" binary...
 else
   ARGS+=("$@")
