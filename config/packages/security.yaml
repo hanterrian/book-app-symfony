@@ -15,29 +15,10 @@ security:
                 class: App\Entity\User
                 property: email
 
-        sonata_user_bundle:
-            id: sonata.user.security.user_provider
-
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        admin:
-            lazy: true
-            pattern: /admin(.*)
-            provider: sonata_user_bundle
-            context: user
-            form_login:
-                login_path: sonata_user_admin_security_login
-                check_path: sonata_user_admin_security_check
-                default_target_path: sonata_admin_dashboard
-            logout:
-                path: sonata_user_admin_security_logout
-                target: sonata_user_admin_security_login
-            remember_me:
-                secret: '%env(APP_SECRET)%'
-                lifetime: 2629746
-                path: /admin
         main:
             lazy: true
             provider: app_user_provider
@@ -61,19 +42,6 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        # Admin login page needs to be accessed without credential
-        - { path: ^/admin/login$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/logout$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/login_check$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/request$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/check-email$, role: PUBLIC_ACCESS }
-        - { path: ^/admin/reset/.*$, role: PUBLIC_ACCESS }
-
-        # Secured part of the site
-        # This config requires being logged for the whole site and having the admin role for the admin part.
-        # Change these rules to adapt them to your needs
-        - { path: ^/admin/, role: ROLE_ADMIN }
-        - { path: ^/.*, role: PUBLIC_ACCESS }
 
 when@test:
     security:
