@@ -70,6 +70,9 @@ RUN chown -R www-data:www-data /application
 # Copy and run composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+RUN mkdir /var/www/.composer
+
+RUN chmod -R 0777 /var/www/.composer
 
 COPY start-container /usr/local/bin/start-container
 
